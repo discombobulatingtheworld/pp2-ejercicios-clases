@@ -10,18 +10,11 @@ Definir la función `inRange` que determina si un valor está dentro de un rango
 - `inRange (-1) 0 2 = False`
 - `inRange (-1) 1 0 = True`
 
----
-
 # Soluciones
 
+- [Opción A](inRange_a.hs)
+
 ## Opción A
-
-```haskell
-inRange :: Integer -> Integer -> Integer -> Bool
-inRange start end x = start <= x && x <= end
-```
-
-### Verificación
 
 ```
 ghci> inRange 5 7 1

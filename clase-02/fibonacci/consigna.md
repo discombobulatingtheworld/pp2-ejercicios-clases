@@ -11,22 +11,11 @@ Definir la función `fibonacci` , que dado un número natural n retorna el enés
 - `fibonacci 10 = 55`
 - `fibonacci (-1) = error!`
 
----
-
 # Soluciones
 
+- [Opción A](fibonacci_a.hs)
+
 ## Opción A
-
-```haskell
-fibonacci :: Integer -> Integer
-fibonacci num
-    | num < 0 = error "Numero negativo!"
-    | num == 0 = 0
-    | num == 1 = 1
-    | num >= 2 = ( ( fibonacci (num - 1) ) + ( fibonacci (num - 2)) )
-```
-
-### Verificación
 
 ```
 ghci> fibonacci 0

@@ -13,3 +13,9 @@ Ejercicios de Paradigmas de la Programación 2
 - [setElemAt](clase-02/setElemAt/consigna.md)
 - [oneHot](clase-02/oneHot/consigna.md)
 
+## Clase 3 - Funciones de Orden Superior
+
+- [allEqual](clase-03/allEqual/consigna.md)
+- [isSorted](clase-03/isSorted/consigna.md)
+- [bests](clase-03/bests/consigna.md)
+- [Stackalc](clase-03/Stackalc/consigna.md)
