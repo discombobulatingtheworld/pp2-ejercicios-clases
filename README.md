@@ -19,3 +19,9 @@ Ejercicios de Paradigmas de la Programación 2
 - [isSorted](clase-03/isSorted/consigna.md)
 - [bests](clase-03/bests/consigna.md)
 - [Stackalc](clase-03/Stackalc/consigna.md)
+
+## Clase 4 - Tipos Algebraicos
+
+- [angle](clase-04/angle/consigna.md)
+- [BinTree](clase-04/BinTree/consigna.md)
+- [Ord Angle](clase-04/Ord%20Angle/consigna.md)

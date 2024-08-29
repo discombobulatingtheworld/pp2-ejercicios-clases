@@ -19,8 +19,6 @@ instance Eq Angle where
 
 Ahora se busca definir la instancia de Ord para el mismo.
 
----
-
 <aside>
 ℹ️ Investigando se encuentra lo siguiente:
 
