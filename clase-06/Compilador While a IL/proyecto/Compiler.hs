@@ -1,5 +1,6 @@
 import Data.List ( nub, elemIndex )
 import Interpreter
+import EnvelopeTemp
 
 ilLocals :: Stmt -> [String]
 ilLocals (Assign x _) = [x]
@@ -30,7 +31,7 @@ ilMaxStackBExp (And b1 b2) =
 ilMaxStackStmt :: Stmt -> Int
 ilMaxStackStmt (Assign x a) = ilMaxStackAExp a
 ilMaxStackStmt (Seq stmts) =
-  maximum (map ilMaxStackStmt stmts)
+  maximum (0 : map ilMaxStackStmt stmts)
 ilMaxStackStmt (IfThenElse b s1 s2) =
   maximum [ilMaxStackBExp b, ilMaxStackStmt s1, ilMaxStackStmt s2]
 ilMaxStackStmt (WhileDo b s) =
@@ -38,7 +39,7 @@ ilMaxStackStmt (WhileDo b s) =
 
 data CodeGenContext = CodeGenContext {
   locals :: [String],
-  tags :: [Int]
+  nextTag :: Int
 } deriving (Show)
 
 ilCompileAExp :: AExp -> CodeGenContext -> [String]
@@ -50,7 +51,7 @@ ilCompileAExp (Add a1 a2) ctx =
 ilCompileAExp (Sub a1 a2) ctx =
   concat [ilCompileAExp a1 ctx, ilCompileAExp a2 ctx, ["sub"]]
 ilCompileAExp (Mult a1 a2) ctx =
-  concat [ilCompileAExp a1 ctx, ilCompileAExp a2 ctx, ["mult"]]
+  concat [ilCompileAExp a1 ctx, ilCompileAExp a2 ctx, ["mul"]]
 
 ilCompileBExp :: BExp -> CodeGenContext -> [String]
 ilCompileBExp (BoolLit bool) _
@@ -66,8 +67,13 @@ ilCompileBExp (And b1 b2) ctx =
   concat [ilCompileBExp b1 ctx, ilCompileBExp b2 ctx, ["and"]]
 
 ilCompileStmt :: Stmt -> [String]
-ilCompileStmt s = fst (_ilCompileStmt s ctx)
-  where ctx = CodeGenContext{ locals = ilLocals s, tags = [0] }
+ilCompileStmt s = [ ".maxstack " ++ show maxStack ] ++
+  [ ".locals init (" ++ prog ++ ")" ] ++
+  fst (_ilCompileStmt s ctx)
+    where prog = drop 2 (concat [ ", int32 V_" ++ show idx | idx <- [0..(length locals - 1)] ])
+          ctx = CodeGenContext{ locals = locals, nextTag = 0 }
+          maxStack = ilMaxStackStmt s
+          locals = ilLocals s
 
 _ilCompileStmt :: Stmt -> CodeGenContext -> ([String], CodeGenContext)
 _ilCompileStmt (Assign x a1) ctx =
@@ -76,7 +82,7 @@ _ilCompileStmt (Assign x a1) ctx =
 _ilCompileStmt (Seq xs) ctx
   | null xs = ([], ctx)
   | length xs == 1 = _ilCompileStmt (head xs) ctx
-  | otherwise = 
+  | otherwise =
       (s1 ++ s2, ctx2)
         where (s2, ctx2) = _ilCompileStmt (Seq (tail xs)) ctx1
               (s1, ctx1) = _ilCompileStmt (head xs) ctx
@@ -91,10 +97,10 @@ _ilCompileStmt (IfThenElse b1 s1 s2) ctx =
     (\(x1:xt) -> (t1 ++ ": " ++ x1):xt) s1a,
     [t2 ++ ": nop"]
   ], newCtx)
-    where newCtx = CodeGenContext{ locals = locals ctx2, tags = [i1+1,i1]++tags ctx2 }
+    where newCtx = CodeGenContext{ locals = locals ctx2, nextTag = i1 + 2 }
           t2 = "T" ++ show (i1 + 1)
           t1 = "T" ++ show i1
-          i1 = head (tags ctx2)
+          i1 = nextTag ctx2
           (s2a, ctx2) = _ilCompileStmt s2 ctx1
           (s1a, ctx1) = _ilCompileStmt s1 ctx
 _ilCompileStmt (WhileDo b1 s1) ctx =
@@ -108,11 +114,17 @@ _ilCompileStmt (WhileDo b1 s1) ctx =
     ["br " ++ t1],
     [t2 ++ ": nop"]
   ], newCtx)
-    where newCtx = CodeGenContext{ locals = locals ctx1, tags = [i1+1,i1]++tags ctx1 }
+    where newCtx = CodeGenContext{ locals = locals ctx1, nextTag = i1 + 2 }
           t2 = "T" ++ show (i1 + 1)
           t1 = "T" ++ show i1
-          i1 = head (tags ctx1)
+          i1 = nextTag ctx1
           (s1a, ctx1) = _ilCompileStmt s1 ctx
+
+ilCompileProgram :: Stmt -> String -> String
+ilCompileProgram s n =
+  addEnvelope n (concatMap (\s -> "    " ++ s ++ "\n") (ilStmts ++ ["ret"]))
+    where ilStmts = ilCompileStmt s
+
 
 
 
@@ -129,3 +141,10 @@ example3 = Seq [
   (Seq [
     Assign "f" (Mult (Var "f") varN), Assign "n" (Sub varN one)
   ])]
+example4 = Seq [Assign "x" (Num (-32)), IfThenElse
+  (Neg (CompLtEq zero varX)) (Seq [Assign "x" (Num (-32)), IfThenElse
+  (Neg (CompLtEq zero varX)) (Assign "x" (Sub zero varX)) (Seq [])]) (Seq [
+  Assign "n" (Num 5), Assign "f" one, WhileDo (CompLtEq one varN)
+  (Seq [
+    Assign "f" (Mult (Var "f") varN), Assign "n" (Sub varN one)
+  ])])]
