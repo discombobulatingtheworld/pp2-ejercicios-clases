@@ -2,10 +2,12 @@ module Interpreter where
 
 data AExp = Num Int | Var String
           | Add AExp AExp | Sub AExp AExp
-          | Mult AExp AExp deriving (Eq, Show)
+          | Mult AExp AExp |Div AExp AExp
+          deriving (Eq, Show)
 data BExp = BoolLit Bool 
-          | CompEq AExp AExp | CompLtEq AExp AExp
-          | Neg BExp | And BExp BExp deriving (Eq, Show)
+          | CompEq AExp AExp | CompLtEq AExp AExp | CompGtEq AExp AExp
+          | Neg BExp | And BExp BExp | Or BExp BExp
+          deriving (Eq, Show)
 data Stmt = Assign String AExp
           | Seq [Stmt]
           | IfThenElse BExp Stmt Stmt
@@ -20,6 +22,7 @@ evalAExp (Var x) s = let (Just v) = (lookup x s) in v
 evalAExp (Add a1 a2) s = (evalAExp a1 s) + (evalAExp a2 s)
 evalAExp (Sub a1 a2) s = (evalAExp a1 s) - (evalAExp a2 s)
 evalAExp (Mult a1 a2) s = (evalAExp a1 s) * (evalAExp a2 s)
+evalAExp (Div a1 a2) s = div (evalAExp a1 s)  (evalAExp a2 s)
 
 updateState :: String -> Int -> State -> State
 updateState x v s = (x, v):(filter (\(y, _) -> x /= y) s)
@@ -28,8 +31,10 @@ evalBExp :: BExp -> State -> Bool
 evalBExp (BoolLit b) _ = b
 evalBExp (CompEq a1 a2) s = (evalAExp a1 s) == (evalAExp a2 s)
 evalBExp (CompLtEq a1 a2) s = (evalAExp a1 s) <= (evalAExp a2 s)
+evalBExp (CompGtEq a1 a2) s = (evalAExp a1 s) >= (evalAExp a2 s)
 evalBExp (Neg b1) s = not (evalBExp b1 s)
 evalBExp (And b1 b2) s = (evalBExp b1 s) && (evalBExp b2 s)
+evalBExp (Or b1 b2) s = (evalBExp b1 s) || (evalBExp b2 s)
 
 evalStmt :: Stmt -> State -> State
 evalStmt (Assign x a) s = (x, v):(filter (\(y, _) -> x /= y) s)

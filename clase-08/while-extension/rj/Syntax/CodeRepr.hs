@@ -5,7 +5,8 @@ data AExp = Num Int | Var String
           | Mult AExp AExp | Div AExp AExp deriving (Eq, Show)
 
 data BExp = BoolLit Bool 
-          | CompEq AExp AExp | CompLtEq AExp AExp | CompGtEq AExp AExp
+          | CompEq AExp AExp | CompGt AExp AExp | CompLt AExp AExp
+          | CompLtEq AExp AExp | CompGtEq AExp AExp
           | Neg BExp | And BExp BExp | Or BExp BExp deriving (Eq, Show)
 
 data Stmt = Assign String AExp

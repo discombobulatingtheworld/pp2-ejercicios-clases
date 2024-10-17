@@ -21,6 +21,8 @@ tokens :-
   "+"                     { \s -> TokenAdd }
   "-"                     { \s -> TokenSub }
   "=="                    { \s -> TokenEq }
+  "<"                     { \s -> TokenLt }
+  ">"                     { \s -> TokenGt }
   "<="                    { \s -> TokenLtEq }
   ">="                    { \s -> TokenGtEq }
   "&&"                    { \s -> TokenAnd }
@@ -38,7 +40,8 @@ data Token
   | TokenNot
   | TokenOParen | TokenCParen
   | TokenMult | TokenDiv | TokenAdd | TokenSub
-  | TokenEq | TokenLtEq | TokenGtEq
+  | TokenEq | TokenLt | TokenGt
+  | TokenLtEq | TokenGtEq
   | TokenAnd | TokenOr
   | TokenAssign | TokenSemi
   | TokenOBrace | TokenCBrace

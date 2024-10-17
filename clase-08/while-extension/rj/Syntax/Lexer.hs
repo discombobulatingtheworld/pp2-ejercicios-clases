@@ -618,8 +618,8 @@ alex_base = listArray (0 :: Int, 53)
   , 0
   , 0
   , -54
-  , 0
   , -53
+  , 0
   , 0
   , -29
   , 0
@@ -676,7 +676,7 @@ alex_table = listArray (0 :: Int, 2633)
   , 25
   , 25
   , 26
-  , 7
+  , 8
   , 9
   , 11
   , 13
@@ -723,7 +723,7 @@ alex_table = listArray (0 :: Int, 2633)
   , 15
   , 6
   , 14
-  , 8
+  , 7
   , 0
   , 0
   , 23
@@ -6003,14 +6003,14 @@ alex_deflt = listArray (0 :: Int, 53)
 
 alex_accept = listArray (0 :: Int, 53)
   [ AlexAccNone
+  , AlexAcc 39
+  , AlexAcc 38
   , AlexAcc 37
   , AlexAcc 36
   , AlexAcc 35
   , AlexAcc 34
   , AlexAcc 33
-  , AlexAccNone
   , AlexAcc 32
-  , AlexAccNone
   , AlexAcc 31
   , AlexAccNone
   , AlexAcc 30
@@ -6058,41 +6058,43 @@ alex_accept = listArray (0 :: Int, 53)
   , AlexAcc 0
   ]
 
-alex_actions = array (0 :: Int, 38)
-  [ (37,alex_action_10)
-  , (36,alex_action_11)
-  , (35,alex_action_12)
-  , (34,alex_action_13)
-  , (33,alex_action_14)
-  , (32,alex_action_15)
-  , (31,alex_action_16)
-  , (30,alex_action_17)
-  , (29,alex_action_18)
-  , (28,alex_action_19)
-  , (27,alex_action_20)
-  , (26,alex_action_21)
-  , (25,alex_action_22)
-  , (24,alex_action_23)
-  , (23,alex_action_24)
-  , (22,alex_action_24)
-  , (21,alex_action_24)
-  , (20,alex_action_24)
-  , (19,alex_action_24)
-  , (18,alex_action_24)
-  , (17,alex_action_24)
-  , (16,alex_action_24)
-  , (15,alex_action_24)
-  , (14,alex_action_24)
-  , (13,alex_action_24)
+alex_actions = array (0 :: Int, 40)
+  [ (39,alex_action_10)
+  , (38,alex_action_11)
+  , (37,alex_action_12)
+  , (36,alex_action_13)
+  , (35,alex_action_14)
+  , (34,alex_action_15)
+  , (33,alex_action_16)
+  , (32,alex_action_17)
+  , (31,alex_action_18)
+  , (30,alex_action_19)
+  , (29,alex_action_20)
+  , (28,alex_action_21)
+  , (27,alex_action_22)
+  , (26,alex_action_23)
+  , (25,alex_action_24)
+  , (24,alex_action_25)
+  , (23,alex_action_26)
+  , (22,alex_action_26)
+  , (21,alex_action_26)
+  , (20,alex_action_26)
+  , (19,alex_action_26)
+  , (18,alex_action_26)
+  , (17,alex_action_26)
+  , (16,alex_action_26)
+  , (15,alex_action_26)
+  , (14,alex_action_26)
+  , (13,alex_action_26)
   , (12,alex_action_2)
   , (11,alex_action_3)
-  , (10,alex_action_24)
-  , (9,alex_action_24)
-  , (8,alex_action_24)
+  , (10,alex_action_26)
+  , (9,alex_action_26)
+  , (8,alex_action_26)
   , (7,alex_action_4)
-  , (6,alex_action_24)
+  , (6,alex_action_26)
   , (5,alex_action_5)
-  , (4,alex_action_24)
+  , (4,alex_action_26)
   , (3,alex_action_6)
   , (2,alex_action_7)
   , (1,alex_action_8)
@@ -6112,16 +6114,18 @@ alex_action_11 = \s -> TokenDiv
 alex_action_12 = \s -> TokenAdd
 alex_action_13 = \s -> TokenSub
 alex_action_14 = \s -> TokenEq
-alex_action_15 = \s -> TokenLtEq
-alex_action_16 = \s -> TokenGtEq
-alex_action_17 = \s -> TokenAnd
-alex_action_18 = \s -> TokenOr
-alex_action_19 = \s -> TokenAssign
-alex_action_20 = \s -> TokenSemi
-alex_action_21 = \s -> TokenOBrace
-alex_action_22 = \s -> TokenCBrace
-alex_action_23 = \s -> TokenNum (read s)
-alex_action_24 = \s -> TokenId s
+alex_action_15 = \s -> TokenLt
+alex_action_16 = \s -> TokenGt
+alex_action_17 = \s -> TokenLtEq
+alex_action_18 = \s -> TokenGtEq
+alex_action_19 = \s -> TokenAnd
+alex_action_20 = \s -> TokenOr
+alex_action_21 = \s -> TokenAssign
+alex_action_22 = \s -> TokenSemi
+alex_action_23 = \s -> TokenOBrace
+alex_action_24 = \s -> TokenCBrace
+alex_action_25 = \s -> TokenNum (read s)
+alex_action_26 = \s -> TokenId s
 
 #define ALEX_NOPRED 1
 -- -----------------------------------------------------------------------------
@@ -6363,13 +6367,14 @@ alexRightContext IBOX(sc) user__ _ _ input__ =
         -- match when checking the right context, just
         -- the first match will do.
 #endif
-{-# LINE 35 ".\Lexer.x" #-}
+{-# LINE 37 ".\Lexer.x" #-}
 data Token 
   = TokenNum Int | TokenBool Bool | TokenId String
   | TokenNot
   | TokenOParen | TokenCParen
   | TokenMult | TokenDiv | TokenAdd | TokenSub
-  | TokenEq | TokenLtEq | TokenGtEq
+  | TokenEq | TokenLt | TokenGt
+  | TokenLtEq | TokenGtEq
   | TokenAnd | TokenOr
   | TokenAssign | TokenSemi
   | TokenOBrace | TokenCBrace

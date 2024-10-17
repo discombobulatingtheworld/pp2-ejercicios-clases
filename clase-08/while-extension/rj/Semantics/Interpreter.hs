@@ -1,6 +1,6 @@
 module Semantics.Interpreter where
 
-import Syntax.CodeRepr (AExp(Num, Var, Add, Sub, Mult, Div), BExp(BoolLit, CompEq, CompLtEq, CompGtEq, Neg, And, Or), Stmt(Assign, Seq, IfThenElse, WhileDo))
+import Syntax.CodeRepr (AExp(Num, Var, Add, Sub, Mult, Div), BExp(BoolLit, CompEq, CompGt, CompLt, CompLtEq, CompGtEq, Neg, And, Or), Stmt(Assign, Seq, IfThenElse, WhileDo))
 
 -- data AExp = Num Int | Var String
 --           | Add AExp AExp | Sub AExp AExp
@@ -30,6 +30,8 @@ updateState x v s = (x, v):(filter (\(y, _) -> x /= y) s)
 evalBExp :: BExp -> State -> Bool
 evalBExp (BoolLit b) _ = b
 evalBExp (CompEq a1 a2) s = (evalAExp a1 s) == (evalAExp a2 s)
+evalBExp (CompLt a1 a2) s = (evalAExp a1 s) < (evalAExp a2 s)
+evalBExp (CompGt a1 a2) s = (evalAExp a1 s) > (evalAExp a2 s)
 evalBExp (CompLtEq a1 a2) s = (evalAExp a1 s) <= (evalAExp a2 s)
 evalBExp (CompGtEq a1 a2) s = (evalAExp a1 s) >= (evalAExp a2 s)
 evalBExp (Neg b1) s = not (evalBExp b1 s)

@@ -2,8 +2,8 @@ module Semantics.Compiler where
 
 import Data.List ( nub, elemIndex )
 import Semantics.EnvelopeTemp ( addEnvelope )
-import Syntax.CodeRepr ( AExp(Num, Var, Add, Mult, Sub, Div), BExp(BoolLit, CompEq, CompLtEq, CompGtEq, Neg, And, Or), Stmt(Assign, Seq, IfThenElse, WhileDo) )
-import Distribution.Simple (Compiler(Compiler))
+import Syntax.CodeRepr ( AExp(Num, Var, Add, Mult, Sub, Div), BExp(BoolLit, CompEq, CompLt, CompGt, CompLtEq, CompGtEq, Neg, And, Or), Stmt(Assign, Seq, IfThenElse, WhileDo) )
+-- import Distribution.Simple (Compiler(Compiler))
 
 ilLocals :: Stmt -> [String]
 ilLocals (Assign x _) = [x]
@@ -70,6 +70,10 @@ ilCompileBExp (BoolLit bool) _
   | otherwise = ["ldc.i4.0"]
 ilCompileBExp (CompEq a1 a2) ctx =
   concat [ilCompileAExp a1 ctx, ilCompileAExp a2 ctx, ["ceq"]]
+ilCompileBExp (CompLt a1 a2) ctx =
+  concat [ilCompileAExp a1 ctx, ilCompileAExp a2 ctx, ["clt"]]
+ilCompileBExp (CompGt a1 a2) ctx =
+  concat [ilCompileAExp a1 ctx, ilCompileAExp a2 ctx, ["cgt"]]
 ilCompileBExp (CompLtEq a1 a2) ctx =
   concat [ilCompileAExp a2 ctx, ilCompileAExp a1 ctx, ["cgt"]]
 ilCompileBExp (CompGtEq a1 a2) ctx =

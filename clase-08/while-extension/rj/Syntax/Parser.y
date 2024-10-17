@@ -21,6 +21,8 @@ import Syntax.Lexer
   '+'        { TokenAdd }
   '-'        { TokenSub }
   '=='       { TokenEq }
+  '<'        { TokenLt }
+  '>'        { TokenGt }
   '<='       { TokenLtEq }
   '>='       { TokenGtEq }
   '&&'       { TokenAnd }
@@ -35,7 +37,7 @@ import Syntax.Lexer
 
 %left '||'
 %left '&&'
-%nonassoc '==' '<=' '>='
+%nonassoc '<' '>' '==' '<=' '>='
 left '+' '-'
 left '*' '/'
 left '!'
@@ -58,6 +60,8 @@ BExp :: {BExp}
   : bool           { BoolLit $1 }
   | '(' BExp ')'   { $2 }
   | AExp '==' AExp { CompEq $1 $3 }
+  | AExp '<' AExp { CompLt $1 $3 }
+  | AExp '>' AExp { CompGt $1 $3 }
   | AExp '<=' AExp { CompLtEq $1 $3 }
   | AExp '>=' AExp { CompGtEq $1 $3 }
   | '!' BExp       { Neg $2 }
