@@ -8,8 +8,5 @@
   },
   "devDependencies": {
     "vite": "^5.4.8"
-  },
-  "dependencies": {
-    "webworkers": "file:"
   }
 }
