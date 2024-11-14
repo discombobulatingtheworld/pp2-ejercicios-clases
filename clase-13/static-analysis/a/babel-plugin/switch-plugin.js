@@ -148,6 +148,14 @@ const testForAlebraicSimplification1 = `
 let y = 0 + 9
 `;
 
+const testForConstantFolding2 = `
+let x = 3 + 9 * 7;
+`;
+
+const testForAlebraicSimplification2 = `
+let x = 3 + 0 * 7;
+`;
+
 function test(codeIn) {
   const {
     ast, code: codeOut,
@@ -159,7 +167,7 @@ function test(codeIn) {
 
 function main() {
   let idx = 0;
-  for (const testCase of [testForConstantFolding1, testForAlebraicSimplification1]) {
+  for (const testCase of [testForConstantFolding1, testForConstantFolding2, testForAlebraicSimplification1, testForAlebraicSimplification2]) {
     console.log(`\n\nRunning test case ${++idx}\n====================\n`);
     test(testCase);
   }
