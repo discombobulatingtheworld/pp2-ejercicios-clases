@@ -19,14 +19,11 @@ instance Eq Angle where
 
 Ahora se busca definir la instancia de Ord para el mismo.
 
-<aside>
-ℹ️ Investigando se encuentra lo siguiente:
+    ℹ️ Investigando se encuentra lo siguiente:
 
-*Minimal complete definition: either [`compare`](https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Ord.html#v:compare) or [`<=`](https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Ord.html#v:-60--61-). Using [`compare`](https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Ord.html#v:compare) can be more efficient for complex types.*
+    *Minimal complete definition: either [`compare`](https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Ord.html#v:compare) or [`<=`](https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Ord.html#v:-60--61-). Using [`compare`](https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Ord.html#v:compare) can be more efficient for complex types.*
 
-https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Ord.html
-
-</aside>
+    https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-Ord.html
 
 # Soluciones
 

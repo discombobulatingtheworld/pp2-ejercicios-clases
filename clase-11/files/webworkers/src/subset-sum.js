@@ -29,36 +29,38 @@ export function* naiveSubsetSum(ns, target) {
   }
 } // function naiveSubsetSum
 
-export function naiveSubsetSumArray(ns, target) {
-  const xs = [...ns];
-  while (xs.length > 0) {
-    const x = xs.pop();
-    if (x === target) {
-      return [x];
-    }
-    for (const result of naiveSubsetSum(xs, target - x)) {
-      return [x, ...result];
-    }
+export function naiveSubsetSumArray(x, ns, target) {
+  const xs = [...ns]
+  if (x === target) {
+    return [x];
   }
-  return null;
+  if (xs.length === 0) {
+    return [];
+  }
+  let results = [];
+  for (const result of naiveSubsetSum(xs, target - x)) {
+    results.push([x, ...result]);
+  }
+  return results;
 } // function naiveSubsetSumArray
-
-export function naiveSubsetSumParallelAux(problem) {
-  return naiveSubsetSumParallel(problem["ns"], problem["target"]);
-}
 
 export function naiveSubsetSumParallel(ns, target) {
   return Promise.all(
     ns.map(
       (x, i) => {
-        xs = [...ns].splice(i, 1);
-        return betterWorkerFunction(
-          (ns, t) => [...naiveSubsetSumArray(ns, t)]
-        )(xs, target - t);
+        let xs = [...ns];
+        xs.splice(i, 1);
+        const workerFunctionCode = `  ${naiveSubsetSum}
+${naiveSubsetSumArray}
+
+const result = naiveSubsetSumArray(y, ys, t);
+return [...result];`;
+        const workerFunction = new Function("return " + `function (y, ys, t) {${workerFunctionCode}}`)();
+        return betterWorkerFunction(workerFunction)(x, xs, target);
       }
     )
   );
-}
+} // function naiveSubsetSumParallel
 
 export function testSubsetSum() {
   const [ns, target] = randomSubsetSumProblem();
@@ -67,3 +69,56 @@ export function testSubsetSum() {
   const time = (Date.now() - startTime) / 1e3;
   return { ns, target, firstSolution, time };
 } // function testSubsetSum
+
+export async function testSubsetSumParallel() {
+  const ns = testCaseSubsetSumParallel['ns'];
+  const target = testCaseSubsetSumParallel['target'];
+  const startTime = Date.now();
+  const results = await naiveSubsetSumParallel(ns, target);
+  const solutions = results.filter(x => x.length > 0)
+  let flatSolutions = [];
+  for (const slice of solutions) {
+    for (const solution of slice) {
+      flatSolutions.push(solution);
+    }
+  }
+  const time = (Date.now() - startTime) / 1e3;
+  return { ns, target, flatSolutions, time };
+} // function testSubsetSumParallel
+
+const testCaseSubsetSumParallel = {
+  "ns": [
+      415,
+      330,
+      112,
+      250,
+      446,
+      1,
+      60,
+      277,
+      289,
+      237,
+      364,
+      350,
+      319,
+      156,
+      380,
+      259,
+      376,
+      323,
+      25,
+      135,
+      329,
+      268,
+      362,
+      462,
+      313
+  ],
+  "target": 431,
+  "firstSolution": [
+      25,
+      156,
+      250
+  ],
+  "time": 4.791
+}

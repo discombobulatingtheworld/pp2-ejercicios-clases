@@ -52,7 +52,7 @@ export function betterWorkerFunction(fn) {
       worker.terminate();
     };
     worker.onerror = (errEv) => {
-      reject(errEv.error);
+      reject(errEv.message);
       worker.terminate();
     }
     worker.postMessage(args);

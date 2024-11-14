@@ -1,3 +1,10 @@
+# Ejemplo A
+
+## Respuestas
+
+### Pregunta 1
+
+```haskell
 import Data.Char (isDigit)
 
 
@@ -28,7 +35,39 @@ evaluate "" = []
 evaluate str = foldl (flip operator) [] str
 
 
-test4 = evaluate "2~"
-test5 = evaluate "23^"
-test6 = evaluate "212/^"
-test7 = evaluate "p2*"
+test1 = evaluate "2~"
+test2 = evaluate "23^"
+test3 = evaluate "212/^"
+test4 = evaluate "p2*"
+```
+
+#### Devolución
+
+El operador pi falla si la pila de evaluación no está vacía. El resto es coherente.
+
+### Pregunta 2
+
+```haskell
+import Data.Char (isDigit)
+
+numbers :: String -> String
+numbers = filter isDigit
+
+
+test1 = numbers ""
+test2 = numbers "abcd"
+test3 = numbers "[3,2,1]"
+test4 = numbers "0n3 tw0 thr33"
+```
+
+#### Devolución
+
+Correcto.
+
+### Pregunta 3
+
+d. Ninguna de las otras opciones son correctas.
+
+#### Devolución
+
+Ok.

@@ -29,6 +29,26 @@ export function tickWorker(period = 500) {
   return worker;
 } // function tickWorker
 
+export function tickWorkerWithCap(period = 500, initialTickAllowance = Infinity) {
+  if (Number.isNaN(+period)) {
+    throw new Error(`Invalid period ${period}!`);
+  }
+  const initWorker = (period, availableTicks) => {
+    let remainingTicks = availableTicks;
+    let interval = setInterval(() => {
+      remainingTicks = remainingTicks - 1;
+      if (remainingTicks < 1)
+        clearInterval(interval);
+      self.postMessage(Date.now())
+    }, +period);
+  };
+  const worker = newWorker(`(${initWorker})(${+period},${initialTickAllowance});`);
+  worker.onmessage = (event) => {
+    console.log(event.data);
+  }
+  return worker;
+} // function tickWorkerWithCap
+
 export function workerFunction(fn) {
   const code = `self.onmessage = ({ data }) => 
     self.postMessage((${fn}).call(self, ...data));`;
@@ -38,23 +58,6 @@ export function workerFunction(fn) {
       resolve(event.data);
       worker.terminate();
     };
-    worker.postMessage(args);
-  });
-} // function workerFunction
-
-export function betterWorkerFunction(fn) {
-  const code = `self.onmessage = ({ data }) => 
-    self.postMessage((${fn}).call(self, ...data));`;
-  return (...args) => new Promise((resolve, reject) => {
-    const worker = newWorker(code);
-    worker.onmessage = (event) => {
-      resolve(event.data);
-      worker.terminate();
-    };
-    worker.onerror = (errEv) => {
-      reject(errEv.message);
-      worker.terminate();
-    }
     worker.postMessage(args);
   });
 } // function workerFunction

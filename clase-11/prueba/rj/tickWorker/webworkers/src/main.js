@@ -1,19 +1,17 @@
 import './style.css';
 import {
-  naiveSubsetSum, randomSubsetSumProblem, testSubsetSum, naiveSubsetSumParallel, testSubsetSumParallel
+  naiveSubsetSum, randomSubsetSumProblem, testSubsetSum,
 } from './subset-sum';
 import {
-  newWorker, echoWorker, tickWorker, workerFunction,
+  newWorker, echoWorker, tickWorker, workerFunction, tickWorkerWithCap,
 } from './utils';
 
 window.naiveSubsetSum = naiveSubsetSum;
 window.randomSubsetSumProblem = randomSubsetSumProblem;
 window.testSubsetSum = testSubsetSum;
-window.naiveSubsetSumParallel = naiveSubsetSumParallel;
-window.testSubsetSumParallel = testSubsetSumParallel;
-
 
 window.newWorker = newWorker;
 window.echoWorker = echoWorker;
 window.tickWorker = tickWorker;
 window.workerFunction = workerFunction;
+window.tickWorkerWithCap = tickWorkerWithCap;
