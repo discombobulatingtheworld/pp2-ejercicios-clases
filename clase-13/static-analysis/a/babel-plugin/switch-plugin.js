@@ -1,5 +1,6 @@
 import { transformSync } from '@babel/core';
 import * as t from "@babel/types";
+import generate from "@babel/generator";
 
 // Check <https://babeljs.io/docs/babel-types>.
 function pluginSwitchComma({ types: t }) {
@@ -53,6 +54,9 @@ function _algebraicSimplification(path) {
         if (path.node.right.value === 1) {
           path.replaceWith(path.node.left);
         }
+        else if (path.node.right.value == 0) {
+          path.replaceWith(t.numericLiteral(Infinity));
+        }
         else return false;
         break;
       case '%':
@@ -61,7 +65,7 @@ function _algebraicSimplification(path) {
         }
         else return false;
         break;
-      case '^':
+      case '**':
         if (path.node.right.value === 0) {
           path.replaceWith(t.numericLiteral(1));
         }
@@ -73,33 +77,41 @@ function _algebraicSimplification(path) {
       default:
         return false; 
     }
+    return true;
   }
-  return true;
+  return false;
 } // _algebraicSimplification
 
 function _constantFolding(path) {
-  if (path.node.left.type === 'NumericLiteral' && path.node.right.type === 'NumericLiteral') {
-    let value;
-    switch(path.node.operator) {
-      case '+':
-        value = path.node.left.value + path.node.right.value;
+  const getFormatedValue = (node) => { 
+    if (node.type.startsWith('String')) return `"${node.value}"`;
+    else return node.value;
+  }
+  if (path.node.left.type.endsWith('Literal') && path.node.right.type.endsWith('Literal') && !(path.node.left.type.startsWith('RegExp') || path.node.right.type.startsWith('RegExp'))) {
+    // console.log(path);
+    const code = `${getFormatedValue(path.node.left)} ${path.node.operator} ${getFormatedValue(path.node.right)}`;
+    console.log(code);
+    const newValue = eval(code);
+    console.log(newValue);
+
+    let newNode;
+    switch(typeof(newValue)) {
+      case 'string':
+        newNode = t.stringLiteral(newValue);
         break;
-      case '-':
-        value = path.node.left.value - path.node.right.value;
+      case 'number':
+        newNode = t.numericLiteral(newValue);
         break;
-      case '*':
-        value = path.node.left.value * path.node.right.value;
+      case 'boolean':
+        newNode = t.booleanLiteral(newValue);
         break;
-      case '/':
-        value = path.node.left.value / path.node.right.value;
-        break;
-      case '%':
-        value = path.node.left.value % path.node.right.value;
+      case 'null':
+        newNode = t.nullLiteral();
         break;
       default:
         return false;
     }
-    path.replaceWith(t.numericLiteral(value));
+    path.replaceWith(newNode);
     return true;
   }
   return false;
@@ -115,6 +127,7 @@ function pluginOptimize({ types: t}) {
             { 'type': 'constant folding', 'func': _constantFolding }
           ]) {
             if (((parm) => { 
+              console.log(`Trying opt: ${opt['type']}`);
               const result = opt['func'](parm); 
               if (result) console.log(`Applied ${opt['type']}`);
               return result;
@@ -152,8 +165,36 @@ const testForConstantFolding2 = `
 let x = 3 + 9 * 7;
 `;
 
+const testForConstantFolding3 = `
+let x = \"asd\" * 7;
+`;
+
+const testForConstantFolding4 = `
+let x = \"asd\" + "qwe";
+`;
+
+const testForConstantFolding5 = `
+let x = "asd" + 123;
+`;
+
+const testForConstantFolding6 = `
+let x = 123 - "asd";
+`;
+
 const testForAlebraicSimplification2 = `
 let x = 3 + 0 * 7;
+`;
+
+const testForAlebraicSimplification3 = `
+let y = 46 ** 1
+`;
+
+const testForAlebraicSimplification4 = `
+let y = 46 ** 0
+`;
+
+const testForAlebraicSimplification5 = `
+let x = 4 / 0;
 `;
 
 function test(codeIn) {
@@ -167,7 +208,19 @@ function test(codeIn) {
 
 function main() {
   let idx = 0;
-  for (const testCase of [testForConstantFolding1, testForConstantFolding2, testForAlebraicSimplification1, testForAlebraicSimplification2]) {
+  for (const testCase of [
+    testForConstantFolding1, 
+    testForConstantFolding2, 
+    testForConstantFolding3, 
+    testForConstantFolding4, 
+    testForConstantFolding5, 
+    testForConstantFolding6, 
+    testForAlebraicSimplification1, 
+    testForAlebraicSimplification2, 
+    testForAlebraicSimplification3, 
+    testForAlebraicSimplification4,
+    testForAlebraicSimplification5,
+  ]) {
     console.log(`\n\nRunning test case ${++idx}\n====================\n`);
     test(testCase);
   }
