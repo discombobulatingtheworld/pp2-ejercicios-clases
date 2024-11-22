@@ -1,0 +1,16 @@
+{
+  "name": "nodexpostgresql",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "mermaid": "^11.4.0",
+    "pg": "^8.13.1"
+  }
+}

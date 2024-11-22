@@ -106,4 +106,27 @@ async function main() {
   });
 } // main
 
-main();
+testEvalType();
+// main();
+
+function testEvalType() {
+  const testArray = [
+    ["5+5","number"],["true+true","number"],["5+\"hola\"","string"],["5+true","number"],["\"hola\"+\"hola\"","string"],
+    ["\"hola\"*5","string"],["\"hola\"*\"hola\"","number"],["5*5","number"],["5*true","number"],["true*true","number"],
+    ["5-5","number"],["5-\"hola\"","number"],["5-true","number"],["\"hola\"-\"hola\"","number"],["\"hola\"-true","number"],["false-true","number"],
+    ["5/5","number"],["5/\"hola\"","number"],["5/true","number"],["\"hola\"/\"hola\"","number"],["\"hola\"/true","number"],["false/true","number"],
+    ["5%5","number"],["5%\"hola\"","number"],["5%true","number"],["\"hola\"%\"hola\"","number"],["\"hola\"%true","number"],["false%true","number"],
+    ["5==5", "boolean"], ["5==\"hola\"", "boolean"], ["5==true", "boolean"], ["\"hola\"==\"hola\"", "boolean"], ["\"hola\"==true", "boolean"], ["false==true", "boolean"],
+    ["5!=5", "boolean"], ["5!=\"hola\"", "boolean"], ["5!=true", "boolean"], ["\"hola\"!=\"hola\"", "boolean"], ["\"hola\"!=true", "boolean"], ["false!=true", "boolean"],
+    ["5<5", "boolean"], ["5<\"hola\"", "boolean"], ["5<true", "boolean"], ["\"hola\"<\"hola\"", "boolean"], ["\"hola\"<true", "boolean"], ["false<true", "boolean"],
+    ["5>5", "boolean"], ["5>\"hola\"", "boolean"], ["5>true", "boolean"], ["\"hola\">\"hola\"", "boolean"], ["\"hola\">true", "boolean"], ["false>true", "boolean"],
+    ["5<=5", "boolean"], ["5<=\"hola\"", "boolean"], ["5<=true", "boolean"], ["\"hola\"<=\"hola\"", "boolean"], ["\"hola\"<=true", "boolean"], ["false<=true", "boolean"],
+    ["5>=5", "boolean"], ["5>=\"hola\"", "boolean"], ["5>=true", "boolean"], ["\"hola\">=\"hola\"", "boolean"], ["\"hola\">=true", "boolean"], ["false>=true", "boolean"],
+    ["5&&5", "number"], ["\"hola\"&&\"hola\"", "string"],["false&&true", "boolean"],
+    ["5||5", "number"], ["\"hola\"||\"hola\"", "string"],["false||true", "boolean"],
+    ["!5","boolean"], ["!true","boolean"], ["!\"hola\"","boolean"]
+    ];
+  testArray.forEach(element => {
+    console.assert(evalType(element[0]) === element[1], `Test de ${element[0]} no otorga ${element[1]}`);
+  });
+}
