@@ -1,6 +1,8 @@
 import pg from 'pg'
+import * as fs from 'fs';
 
 const { Client, Config, QueryConfig } = pg
+
 
 const client = new Client({
     user: "postgres",
@@ -16,10 +18,10 @@ try {
     
     tableResult.rows.forEach((row) => {
         if(row.table_name in tableDict){
-            tableDict[row.table_name].push(row.column_name)
+            tableDict[row.table_name.replace(" ","_")].push(row.column_name.replace(" ","_")) //Breaks cuz some attributes on table have spaces in them
         }
         else{
-            tableDict[row.table_name] = [row.column_name]
+            tableDict[row.table_name.replace(" ","_")] = [row.column_name.replace(" ","_")]
         }
     })
     const tableRelations = await client.query('select pks.table_name as pk_table, fks.table_name as fk_table \nfrom information_schema.referential_constraints rc \njoin information_schema.table_constraints fks on rc.constraint_name = fks.constraint_name \njoin information_schema.table_constraints pks on rc.unique_constraint_name = pks.constraint_name')
@@ -27,10 +29,10 @@ try {
 
     tableRelations.rows.forEach((row) => {
         if(row.table_name in relationsDict){
-            relationsDict[row.pk_table].push(row.fk_table)
+            relationsDict[row.pk_table.replace(" ","_")].push(row.fk_table.replace(" ","_"))
         }
         else{
-            relationsDict[row.pk_table] = [row.fk_table]
+            relationsDict[row.pk_table.replace(" ","_")] = [row.fk_table.replace(" ","_")]
         }
     })
     buildMermaid(tableDict,relationsDict)
@@ -58,4 +60,12 @@ try {
         result+='   }\n'
     })
     console.log(result)
- }
+    outputToMarkdownFile(result)
+}
+
+function outputToMarkdownFile(data){
+    var result = "```mermaid\n"+data+"\n```"
+    fs.writeFile('./output/Output.md',result, (err) => {
+        if (err) throw err.message;
+    })
+}
